@@ -1,0 +1,4 @@
+Sends growl notifications from tweetdeck website.
+To install click on the .user.js file, click on the raw file, if greasemonkey is installed it will install from there.
+Known issues:
+Doesn't work if home page is logon screen, update is in the works (refresh page once logged in solves it)
