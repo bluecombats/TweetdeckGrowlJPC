@@ -3,7 +3,7 @@
 // @namespace     http://www.bluecombats.blogspot.com
 // @description	  Sends Growl notifications from the tweetdeck website when there is a new tweet, Number of columns gets registered with growl app
 // @include       https://tweetdeck.twitter.com/*
-// @version        1.71
+// @version        1.79
 //@date 2014-04-07
 // ==/UserScript==
 
@@ -40,6 +40,17 @@ GrowlMonkey = function(){
 }();
 
 	try{
+		function TweetdeckLoginScreen(){
+			var moveon="no";
+			while (moveon=="no"){
+				//test
+				console.log("nope");
+				if(!document.getElementsByClassName('js-app-loading')[0].getElementsByClassName('js-startflow-chrome app-masthead')[0]){
+					console.log("moving on");
+					moveon="yes";
+				}
+			}
+		}
 		function TweetDeckColumns(){
 	       var Var="exist";
 	       var i=0;
@@ -128,8 +139,9 @@ GrowlMonkey = function(){
                         tweet[j]=null;
                         var image=null;*/
                     }
+					else{
                     //WARNING below
-                    else if(TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0]){
+                    /*else if(TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0]){
                     	//check if it's a retweet
 						console.log(TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByTagName('div')[0].className);
 						console.log(TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByTagName('div')[1].className);
@@ -141,22 +153,121 @@ GrowlMonkey = function(){
                     		retweeter=TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByClassName('tweet-context txt-small txt-mute padding-bs')[0].getElementsByClassName('nbfc')[0].getElementsByTagName('a')[0].innerHTML;
                     		retweeter="Retweeted by "+retweeter+"\n\n";
                     		console.log("retweeter:"+retweeter);
-                    	}/*
-                    	else{
-                    		var retweeter="";
                     	}*/
-                        var account=TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByTagName('header')[0].getElementsByClassName('account-link link-complex block')[0].getElementsByTagName('div')[1].getElementsByTagName('span')[0].getElementsByTagName('b')[0].innerHTML;
-                        //console.log('account found'+account);
-                        tweet[j]=TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByClassName('tweet-body')[0].getElementsByTagName('p')[0].innerHTML;
-                        //console.log('tweet found');
-                        image=TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByTagName('header')[0].getElementsByClassName('account-link link-complex block')[0].getElementsByTagName('div')[0].getElementsByTagName('img')[0].src;
-                        //console.log('image source: '+image);
+						//check to see if someone retweeted you/favorited/followed
+						var variable=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].className;
+						//test
+						console.log("var:"+variable);
+						if(variable.indexOf("tweet-message")!=-1){
+							console.log("You have a message");
+							console.log("DM column");
+							account=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('header')[0].getElementsByClassName('account-link link-complex block')[0].getElementsByClassName('nbfc')[0].getElementsByTagName('span')[0].getElementsByTagName('b')[0].innerHTML;
+							//console.log('account found'+account);
+							tweet[j]=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByClassName('l-table')[0].getElementsByClassName('tweet-body l-cell')[0].getElementsByTagName('div')[0].getElementsByTagName('p')[0].getElementsByTagName('span')[0].innerHTML;
+							//console.log('tweet found');
+							image=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('header')[0].getElementsByClassName('account-link link-complex block')[0].getElementsByClassName('obj-left item-img tweet-img')[0].getElementsByTagName('img')[0].src;
+							//console.log('image source: '+image);
+                	
+                            //remove <...>
+							tweet[j]=removeHtml(tweet[j]);
+							//remove entities and replace
+							tweet[j]=removeHtmlEntities(tweet[j]);
+							console.log(account+': '+tweet[j]);
+						}
+						else{
+							variable=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].className;
+							//added to a list
+							if(variable.indexOf("item-img")!=-1){
+								console.log("added to a list");
+								account=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[1].getElementsByTagName('a')[0].innerHTML;
+								tweet[j]=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[1].getElementsByTagName('a')[1].innerHTML;
+								tweet[j]=account+" has added you to their list"+tweet[j];
+							}
+							else{
+							variable=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('div')[0].className;
+							//test
+							console.log("var2:"+variable);
+							if(variable.indexOf("tweet-img")==-1){
+								console.log("someone has liked you by 1 of 3 options");
+								variable=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('div')[1].innerHTML;
+								if(variable.indexOf("favorited you")!=-1){
+									console.log("Option 1:favorited you");
+									//other persons account name
+									account=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('div')[1].getElementsByTagName('a')[0].innerHTML;
+									//your tweet they favorited
+									tweet[j]=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('span')[0].getElementsByTagName('div')[0].getElementsByClassName('tweet-body')[0].getElementsByTagName('p')[0].innerHTML;
+									//top line
+									retweeter=account+" favorited your tweet";
+									image=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('img')[0].src;
+								}
+								else if(variable.indexOf("favorited")!=-1){
+									console.log("Option 1:favorited");
+									//other persons account name
+									account=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('div')[1].getElementsByTagName('a')[0].innerHTML;
+									//TEST
+									console.log(TweetContainer.getElementsByTagName('div')[0].className);
+									console.log(TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[2].className);
+									console.log(TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[3].className);			
+									console.log(TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[4].className);
+									//your tweet they favorited
+									tweet[j]=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[3].getElementsByClassName('tweet-body')[0].getElementsByTagName('p')[0].innerHTML;
+									//top line
+									retweeter="SOMEONE";
+									retweeter=account+" favorited "+retweeter+" tweet";
+									//image=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[3].getElementsByTagName('header')[0].getElementsByTagName('a')[0].getElementsByTagName('div')[0].getElementsByTagName('img')[0].src;
+								}
+								else if(variable.indexOf("retweeted")!=-1){
+									console.log("Option 2:retweeted");
+									//other persons account name
+									account=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('div')[1].getElementsByTagName('a')[0].innerHTML;
+									//your tweet they retweeted
+									tweet[j]=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('span')[0].getElementsByTagName('div')[0].getElementsByClassName('tweet-body')[0].getElementsByTagName('p')[0].innerHTML;
+									//top line
+									retweeter=account+" retweeted your tweet";
+									image=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('img')[0].src;
+								}
+								else if(variable.indexOf("followed you")!=-1){
+									console.log("Option 3:followed you");
+									//other persons account name
+									account=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('div')[1].getElementsByTagName('a')[0].innerHTML;
+									tweet[j]=account+" followed me";
+									image=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('img')[0].src;
+								}
+								else if(variable.indexOf("followed")!=-1){
+									console.log("Option 3:followed someone");
+									//other persons account name
+									account=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('div')[1].getElementsByTagName('a')[0].innerHTML;
+									tweet[j]=account+" followed SOMEONE";
+									//image=TweetContainer.getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('div')[0].getElementsByTagName('img')[0].src;
+								}
+								else{
+									console.log("Option 4:unknown report error");
+								
+									//normal tweet find account name
+									var account=TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByTagName('header')[0].getElementsByClassName('account-link link-complex block')[0].getElementsByTagName('div')[1].getElementsByTagName('span')[0].getElementsByTagName('b')[0].innerHTML;
+									//console.log('account found'+account);
+									tweet[j]=TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByClassName('tweet-body')[0].getElementsByTagName('p')[0].innerHTML;
+									//console.log('tweet found');
+									image=TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByTagName('header')[0].getElementsByClassName('account-link link-complex block')[0].getElementsByTagName('div')[0].getElementsByTagName('img')[0].src;
+								}
+							}
+							else{
+								//normal tweet find account name
+								var account=TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByTagName('header')[0].getElementsByClassName('account-link link-complex block')[0].getElementsByTagName('div')[1].getElementsByTagName('span')[0].getElementsByTagName('b')[0].innerHTML;
+								//console.log('account found'+account);
+								tweet[j]=TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByClassName('tweet-body')[0].getElementsByTagName('p')[0].innerHTML;
+								//console.log('tweet found');
+								image=TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('js-tweet tweet')[0].getElementsByTagName('header')[0].getElementsByClassName('account-link link-complex block')[0].getElementsByTagName('div')[0].getElementsByTagName('img')[0].src;
+							}
+						}
+						}
+							//console.log('image source: '+image);
                 
                         //remove <...>
                         tweet[j]=removeHtml(tweet[j]);
                         console.log(account+': '+tweet[j]);
                     }
-                    else{
+                    /*else{
                         //following me
                         if(TweetContainer.getElementsByTagName('div')[0].getElementsByClassName('activity-header cf')[0]){
                             console.log("Someone is following me");
@@ -190,12 +301,12 @@ GrowlMonkey = function(){
 						else{
 							console.log("no idea");
 						}
-                     }
+                     }*/
                 
                     if(oldtweet[j]!=tweet[j]){
                         //GrowlMonkey.notify("APPLICATION NAME", "NOTIFICATION TYPE", "TITLE", "TEXT", "ICON URL");
                         console.log("column"+i+"NewTweet");
-                        GrowlMonkey.notify(appname,"column"+i+"NewTweet",account,retweeter+tweet[j]+"\n\n("+i+")"+ColumnHeader+" "+ColumnHeaderAccount,image);
+                        GrowlMonkey.notify(appname,"column"+i+"NewTweet",account,retweeter+"\n\n"+tweet[j]+"\n\n("+i+")"+ColumnHeader+" "+ColumnHeaderAccount,image);
                     }
                     else{
                         console.log('no new tweet');
@@ -286,6 +397,8 @@ GrowlMonkey = function(){
         console.log("Starting TweetDeck Growl JPC")
         setTimeout(function(){
             var appname= 'TweetDeck Growl';
+			//find out if it's on the login screen
+			TweetdeckLoginScreen();
             //find out how many columns there are
             var Columns=TweetDeckColumns();
             TweetDeckGrowlinit(appname,Columns);
