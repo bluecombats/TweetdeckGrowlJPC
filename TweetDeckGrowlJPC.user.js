@@ -1,4 +1,4 @@
-﻿// ==UserScript==
+// ==UserScript==
 // @name          TweetDeck Growl JPC
 // @namespace     http://www.bluecombats.blogspot.com
 // @description	  Sends Growl notifications from the tweetdeck website when there is a new tweet, Number of columns gets registered with growl app
