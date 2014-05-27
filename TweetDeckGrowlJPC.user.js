@@ -40,17 +40,6 @@ GrowlMonkey = function(){
 }();
 
 	try{
-		function TweetdeckLoginScreen(){
-			var moveon="no";
-			while (moveon=="no"){
-				//test
-				console.log("nope");
-				if(!document.getElementsByClassName('js-app-loading')[0].getElementsByClassName('js-startflow-chrome app-masthead')[0]){
-					console.log("moving on");
-					moveon="yes";
-				}
-			}
-		}
 		function TweetDeckColumns(){
 	       var Var="exist";
 	       var i=0;
@@ -344,10 +333,10 @@ GrowlMonkey = function(){
 			"&yen;","&brvbar;","&sect;","&uml;","&copy;","&ordf;","&laquo;","&not;","&shy;","&reg;",
 			"&macr;","&deg;","&plusmn;","&sup2;","&sup3;","&acute;","&micro;","&para;","&middot;","&cedil;",
 			"&sup1;","&ordm;","&raquo;","&frac14;","&frac12;","&frac34;","&iquest;","&times;","&divide;"];
-            var character=["\"","'","&","<",">"," ","¡","¢","£","¤",
-            "¥","¦","§","¨","©","ª","«","¬","?­","®",
-            "¯","°","±","²","³","´","µ","¶","·","¸",
-            "¹","º","»","¼","½","¾","¿","×","÷"];
+            var character=["\"","'","&","<",">"," ","ï¿½","ï¿½","ï¿½","ï¿½",
+            "ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","?ï¿½","ï¿½",
+            "ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½",
+            "ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½","ï¿½"];
             var replace="yes";
             while(replace=="yes"){
                 //replace
@@ -398,7 +387,15 @@ GrowlMonkey = function(){
         setTimeout(function(){
             var appname= 'TweetDeck Growl';
 			//find out if it's on the login screen
-			TweetdeckLoginScreen();
+            var variable=setInterval(function(){
+			   if(!document.getElementsByClassName('js-app-loading')[0].getElementsByClassName('js-startflow-chrome app-masthead')[0]){
+                   clearInterval(variable);
+                   console.log("continue")
+               }
+                else{
+                    console.log("Still on log on screen")
+                }
+            },2000);
             //find out how many columns there are
             var Columns=TweetDeckColumns();
             TweetDeckGrowlinit(appname,Columns);
