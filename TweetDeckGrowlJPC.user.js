@@ -410,7 +410,16 @@ GrowlMonkey = function(){
 			var GroupVar,Columns,k;
             var appname= 'TweetDeck Growl';
 			//find out if it's on the login screen
-			TweetdeckLoginScreen();
+			//TweetdeckLoginScreen();
+			var variable=setInterval(function(){
+				if(!document.getElementsByClassName('js-app-loading')[0].getElementsByClassName('js-startflow-chrome app-masthead')[0]){
+					clearInterval(variable);
+					console.log("continue");
+				}
+				else{
+					console.log("still on log on screen");
+				}
+			},2000);
             //find out how many columns there are
             GroupVar=TweetDeckColumns();
 			Columns=GroupVar[0];
