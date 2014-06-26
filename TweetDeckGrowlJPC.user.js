@@ -53,18 +53,29 @@ GrowlMonkey = function(){
 		}
 		function TweetDeckColumns(){
 	       var Var="exist";
-	       var i=0;
-	       while (Var=="exist"){
-	           if(document.getElementsByClassName('js-app-columns app-columns horizontal-flow-container without-tweet-drag-handles')[0].getElementsByTagName('section')[i]){
-	               i+=1;
-	               console.log("Column "+i+" exists");
-	           }
-	           else{
-	               Var="doesn't exist";
-	           }
+	       var i=0,j=0,k;
+			var alldivs=document.getElementsByTagName("div");
+			while(alldivs[j]){
+				if(alldivs[j].className.search("horizontal-flow-container")!=-1){
+					console.log("success "+j+" "+alldivs[j].className);
+					k=j;
+					while (Var=="exist"){	
+						if(alldivs[j].getElementsByTagName("section")[i]){
+							i+=1;
+							console.log("Column "+i+" exists");
+						}
+						else{
+							Var="doesn't exist";
+						}
+					}
+				}
+				else{
+					//console.log("fail"+alldivs[i].className);
+				}
+				j+=1;
 	       }
 	       columns=i;
-	       return columns;
+	       return [columns,k];
 	   }
         function TweetDeckGrowlinit(appname,Columns){
             console.log('Starting TweetDeck Growl');
@@ -94,7 +105,7 @@ GrowlMonkey = function(){
             }
             return [oldtweet,tweet];
         }
-        function TweetDeckinterval(oldtweet,tweet,appname,Columns){
+        function TweetDeckinterval(oldtweet,tweet,appname,Columns,k){
             var j,i;
 			var column,TweetContainer;
             // multiple columns
@@ -106,8 +117,8 @@ GrowlMonkey = function(){
                 oldtweet[j]=tweet[j];
 				//default
 				tweet[j]=null;
-                //long way of getting to info, will use getElementsByClassName later
-               column=document.getElementsByClassName('js-app-columns app-columns horizontal-flow-container without-tweet-drag-handles')[0].getElementsByTagName('section')[j];
+                //columns
+               column=document.getElementsByTagName("div")[k].getElementsByTagName('section')[j];
                //console.log('column found');
                
                //column header
@@ -396,11 +407,14 @@ GrowlMonkey = function(){
         //Main Script starts here
         console.log("Starting TweetDeck Growl JPC")
         setTimeout(function(){
+			var GroupVar,Columns,k;
             var appname= 'TweetDeck Growl';
 			//find out if it's on the login screen
 			TweetdeckLoginScreen();
             //find out how many columns there are
-            var Columns=TweetDeckColumns();
+            GroupVar=TweetDeckColumns();
+			Columns=GroupVar[0];
+			k=GroupVar[1];
             TweetDeckGrowlinit(appname,Columns);
             tweet={};
             oldtweet={};
@@ -408,7 +422,7 @@ GrowlMonkey = function(){
             oldtweet=Myvar[0];
             tweet=Myvar[1];
             setInterval(function(){
-                Myvar=TweetDeckinterval(oldtweet,tweet,appname,Columns);
+                Myvar=TweetDeckinterval(oldtweet,tweet,appname,Columns,k);
                 oldtweet=Myvar[0];
                 tweet=Myvar[1];
                 destroyGrowl();
