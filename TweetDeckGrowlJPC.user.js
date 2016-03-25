@@ -3,7 +3,7 @@
 // @namespace     http://www.bluecombats.blogspot.com
 // @description	  Sends Growl notifications from the tweetdeck website when there is a new tweet, Number of columns gets registered with growl app
 // @include       https://tweetdeck.twitter.com/*
-// @version        1.8
+// @version        1.81
 //@date 2014-04-07
 // ==/UserScript==
 
@@ -112,7 +112,7 @@ GrowlMonkey = function(){
                 //columns
                column=document.getElementsByTagName('section')[i];
                //console.log('column found');			   
-			   article=column.getElementsByTagName('article')[j];
+			   article=column.getElementsByTagName('article')[0];
 			   user=article.getElementsByClassName("nbfc")[0].innerHTML;
 			   tweet[j]=article.getElementsByTagName("p")[0].innerHTML;
 			   image=article.getElementsByTagName("img")[0].src;
